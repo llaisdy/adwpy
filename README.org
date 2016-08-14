@@ -34,7 +34,7 @@ A python port of ADW [1].
 
   https://raw.githubusercontent.com/pilehvar/ADW/master/resources/offset2ID.map.tsv
 
-The default location is also in adwpy/data:
+  The default location is also in adwpy/data:
 
   $ cd adwpy/data
   $ ln -s /path/to/offset2ID.map.tsv
@@ -56,9 +56,11 @@ The only input format supported by adwpy is "surface text".
 
 The main front-end function in the library is api.pair_similarity.  ADWTest.py gives an example of this function in use.  Essentially:
 
+#+BEGIN_SRC
   dm = config.DisambiguationMethod.ALIGNMENT_BASED
   sc = config.SignatureComparison.WEIGHTED_OVERLAP
   score = pair_similarity(text1, text2, dm, sc)
+#+END_SRC
 
 Where score is a floating point number between 0.0 and 1.0.
 
