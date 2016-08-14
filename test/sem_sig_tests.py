@@ -41,7 +41,7 @@ def ss_for_synset_test(st):
 def ss_load_save_test():
     sts = 'director.n.01'
     ss = sem_sig.sem_sig_for_synset(wn.synset(sts))
-    sfn = ss.src_fn()
+    sfn = ss.get_src_fn()
     print sfn
     ss.save('{}-out.ppv'.format(sts))
     

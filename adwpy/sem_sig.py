@@ -1,5 +1,7 @@
 #! /usr/bin/env python
 
+import os
+
 from nltk.corpus import wordnet as wn
 
 from adwpy.config import PPVS_DIRN, O2IMAP_FN
@@ -7,13 +9,21 @@ from adwpy.config import PPVS_DIRN, O2IMAP_FN
 class SemSig(object):
     def __init__(self, ppvs_dirn=""):
         self.ppvs_dirn = ppvs_dirn
+        self._src_fn = ""
         self.synset = None
         self.map = {} # {synset_id: weight}
         self.ksvs = [] # cache for keys sorted by val
         self.rnkd = {} # cache for ranks
 
     def __repr__(self):
-        return "SemSig('{}')".format(self.synset.name())
+        if self.synset:
+            name = self.synset.name()
+        elif self._src_fn:
+            name = os.path.basename(self._src_fn)
+        else:
+            name = "unnamed"
+        return "SemSig('{}')".format(name)
+
         
     def set_synset(self, synset):
         self.synset = synset
@@ -21,7 +31,7 @@ class SemSig(object):
     def load(self):
         "loads semantic signature from file"
         previous = ''
-        for line in open(self.src_fn()).readlines():
+        for line in open(self.get_src_fn()).readlines():
             synset_id, weight = line.split('\t')
             if not weight.strip():
                 weight = previous
@@ -92,15 +102,21 @@ class SemSig(object):
         return [j for (i,j) in
                 sorted([(v,k) for (k,v) in self.map.items()], reverse=True)]
 
-    def src_fn(self):
+    def get_src_fn(self):
         "source path and filename of this semantic signature"
-        offset = str(self.synset.offset()).zfill(8)
-        pos = anrv(self.synset.pos())
-        gpar = offset[0:2]
-        par  = offset[2:4]
-        path = '{}/{}/{}/{}-{}.ppv'.format(self.ppvs_dirn, gpar, par,
-                                           offset, pos)
-        return path
+        if self._src_fn:
+            return self._src_fn
+        else:
+            offset = str(self.synset.offset()).zfill(8)
+            pos = anrv(self.synset.pos())
+            gpar = offset[0:2]
+            par  = offset[2:4]
+            path = '{}/{}/{}/{}-{}.ppv'.format(self.ppvs_dirn, gpar, par,
+                                            offset, pos)
+            return path
+
+    def set_src_fn(self, fn):
+        self._src_fn = fn
 
 def anrv(x):
     "converts wordnet 's' pos tag to 'a' for use with semantic signature database"

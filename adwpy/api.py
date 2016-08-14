@@ -18,7 +18,7 @@ def oov_check(text):
         else:
             for st in sts:
                 ss = sem_sig.sem_sig_for_synset(st, False)
-                sfn = ss.src_fn()
+                sfn = ss.get_src_fn()
                 if not os.path.isfile(sfn):
                     bad.append([w, st.name(), os.path.basename(sfn)])
     return (not bad, bad)
@@ -31,7 +31,7 @@ def oov_filter(text):
         if len(sts):
             for st in sts:
                 ss = sem_sig.sem_sig_for_synset(st, False)
-                sfn = ss.src_fn()
+                sfn = ss.get_src_fn()
                 if os.path.isfile(sfn):
                     ok.append((w,p))
                     continue
