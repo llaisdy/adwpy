@@ -2,20 +2,17 @@
 
 adwpy (ADW.py) is a Python port of the Java ADW [1], which is in turn an implementation of the ideas and algorithms discussed in Pilehvar et al., 2013 [2].  
 
-** front-end modules
+** test scripts
 
-These two modules are examples of adwpy in action:
-
-- ADWTest.py
-- excel_reader.py
+Two modules in test/ show adwpy in action:
 
 *** ADWTest.py
 
 This is a very basic script which demonstrates the two functions in the api (see below).  It's purpose during development was to compare adwpy results with results from the Java version for the same sentence pair.
 
-*** excel_reader.py
+*** sem_sig_tests.py
 
-This is an extension of ADWTest.py comparing two lists of texts taken from an MS Excel spreadsheet.
+Functions in this module show manipulation of "Semantic Signature" objects.
 
 ** api
 
@@ -26,11 +23,11 @@ adwpy provides two functions as an "api":
 
 *** oov_check
 
-Checks a given string and reports if any words are "Out Of Vocabulary", in other words if they either do not have WordNet synsets or do not have semantic signatures in the ppvs database (see README.txt for the ppvs database; see below on semantic signatures)
+Checks a given string and reports if any words are "Out Of Vocabulary", in other words if they either do not have WordNet synsets or do not have semantic signatures in the ppvs database (see README.org for the ppvs database; see below on semantic signatures)
 
 *** pair_similarity
 
-Compares two input texts (raw strings) using the specified disambiguation method and signature comparison measure (see README.txt for available options).  Returns a floating-point number between 0.0 and 1.0.
+Compares two input texts (raw strings) using the specified disambiguation method and signature comparison measure (see README.org for available options).  Returns a floating-point number between 0.0 and 1.0.
 
 ** internal modules
 
@@ -54,20 +51,24 @@ My judgement is that the ppv files implement the constructive definition of Sema
 
 In the ppvs database, each semantic signature (ppv file) is based on a single WordNet synset.  The ppv filename is constructed from the WordNet offset and part of speech of the given synset.  For example:
 
+#+BEGIN_SRC
     synset: director.n.01
     offset: 10014939
     pos: n
   
     filename: 10014939-n.ppv
+#+END_SRC
 
 File content is as follows (showing 10014939-n.ppv):
 
+#+BEGIN_SRC
     19963    0.252074    # director.n.01
     24878    0.01375     # person.n.01
     25445    0.009696    # oversee.v.01
     42354    0.009174    # owner.n.01
     3657     0.008825    # administrator.n.01
     ...
+#+END_SRC
 
 The first column is a synset id, the second column is that synset's score (as described in Definition).  Corresponding WordNet synsets are given in the third column.
 
@@ -87,7 +88,7 @@ The alignment module implements the alignment-based disambiguation as described 
 
 The alignment is a method for deciding which synset should be chosen for each word in a text.  For each word, the synset with the highest score in the above comparison is chosen to represent that word in the comparison between texts.
 
-** optimisations
+** recommended optimisations
 
 Although Python code is a lot clearer than Java code, it can be significantly slower.  Below are some suggested optimisations.  These changes will mean the python implementation diverges slightly form the Java implementation.  On the other hand they will not severely impact the readability of the code.
 
@@ -110,6 +111,4 @@ Several intensive numerical operations on SemSigs could be done when the data is
 [1] https://github.com/pilehvar/ADW/
 
 [2] M. T. Pilehvar, D. Jurgens and R. Navigli.  "Align, Disambiguate and Walk: A Unified Approach for Measuring Semantic Similarity".  Proceedings of the 51st Annual Meeting of the Association for Computational Linguistics (ACL 2013), Sofia, Bulgaria, August 4-9, 2013, pp. 1341-1351.
-
-
 
