@@ -1,0 +1,115 @@
+* adwpy: code overview
+
+adwpy (ADW.py) is a Python port of the Java ADW [1], which is in turn an implementation of the ideas and algorithms discussed in Pilehvar et al., 2013 [2].  
+
+** front-end modules
+
+These two modules are examples of adwpy in action:
+
+- ADWTest.py
+- excel_reader.py
+
+*** ADWTest.py
+
+This is a very basic script which demonstrates the two functions in the api (see below).  It's purpose during development was to compare adwpy results with results from the Java version for the same sentence pair.
+
+*** excel_reader.py
+
+This is an extension of ADWTest.py comparing two lists of texts taken from an MS Excel spreadsheet.
+
+** api
+
+adwpy provides two functions as an "api":
+
+- oov_check
+- pair_similarity
+
+*** oov_check
+
+Checks a given string and reports if any words are "Out Of Vocabulary", in other words if they either do not have WordNet synsets or do not have semantic signatures in the ppvs database (see README.txt for the ppvs database; see below on semantic signatures)
+
+*** pair_similarity
+
+Compares two input texts (raw strings) using the specified disambiguation method and signature comparison measure (see README.txt for available options).  Returns a floating-point number between 0.0 and 1.0.
+
+** internal modules
+
+As with the front-end modules, the api module is really just an example of how the adwpy library can be used.  The internal modules are also accessible and can be used directly.
+
+*** SemSig: Semantic Signatures
+
+**** Definition
+
+The sem_sig.SemSig object represents a Semantic Signature (as described in [1]).
+
+Note that the definition of Semantic Signature given in [2] is not clear: the formal definition (given in paragraphs 1 & 2 of section 2.1) does not quite tally with the constructive definition (given in paragraph 3 of section 2.1).  For example, the formal definition describes a multinomial distribution resulting from random walks through the WordNet graph, while the constructive definition describes a discrete probability distribution (of a *single* variable) over a set of senses.
+
+The semantic signatures provided in the ppvs database are clearly *not* multinomial distributions, as the values sum to 1.0.
+
+The Java implementation in [1] does not implement generation of Semantic Signatures.
+
+My judgement is that the ppv files implement the constructive definition of Semantic Signature, and this is a non-probabilistic (or "faux-probabilistic") ranking of similar senses.
+
+**** ppv format
+
+In the ppvs database, each semantic signature (ppv file) is based on a single WordNet synset.  The ppv filename is constructed from the WordNet offset and part of speech of the given synset.  For example:
+
+    synset: director.n.01
+    offset: 10014939
+    pos: n
+  
+    filename: 10014939-n.ppv
+
+File content is as follows (showing 10014939-n.ppv):
+
+    19963    0.252074    # director.n.01
+    24878    0.01375     # person.n.01
+    25445    0.009696    # oversee.v.01
+    42354    0.009174    # owner.n.01
+    3657     0.008825    # administrator.n.01
+    ...
+
+The first column is a synset id, the second column is that synset's score (as described in Definition).  Corresponding WordNet synsets are given in the third column.
+
+**** Python implementation
+
+The python functions in sem_sig.py are generally simple maps and sorts on the above ppv map.
+
+Note that, although the keys in the map (column 1 above) are cast to integers when the file is loaded (following the Java implementation).  The keys are never used as integers.  However, when comparing SemSigs, comparison of integers will be marginally faster than comparison of strings, so the conversion is probably worthwhile.
+
+*** comparison
+
+Three comparison measures have been implemented: Cosine, Weighted Overlap, and Jaccard.  For the Jaccard comparison measure, an opional integer parameter topk can be used, which limits the measure to using the k highest scoring keys in each signature.
+
+*** alignment
+
+The alignment module implements the alignment-based disambiguation as described in section 2.2 of [2].  This is quite an intensive procedure as it involves comparing every synset's semantic signature for every word in the first text with every synset's semantic signature for every word in the second.
+
+The alignment is a method for deciding which synset should be chosen for each word in a text.  For each word, the synset with the highest score in the above comparison is chosen to represent that word in the comparison between texts.
+
+** optimisations
+
+Although Python code is a lot clearer than Java code, it can be significantly slower.  Below are some suggested optimisations.  These changes will mean the python implementation diverges slightly form the Java implementation.  On the other hand they will not severely impact the readability of the code.
+
+*** do not use (word, pos) pairs
+
+Following the Java implementation, input texts are converted to lists of (word,pos) pairs before synset and semantic signature analysis.  This step is superfluous (as all operations are based on synsets) and it introduces vulnerabilities (as the pos tagger --- in both the Java and the Python --- occasionally makes different pos judgements from WordNet).
+
+Instead: convert the input text directly to a list of sets of synsets.  Function words (prepositions, determiners, etc.) do not have synsets, so this would also have the effect of removing stopwords.
+
+*** cache frequent SemSig operations
+
+Several intensive numerical operations on SemSigs could be done when the data is loaded from the source file, or when the SemSig is otherwise created or changed, instead of during comparison.  When the SemSig is compared, the values will be ready for use.  In particular the following functions:
+
+- normalise()
+- norm2()
+- keys_sorted_by_val()
+
+** References
+
+[1] https://github.com/pilehvar/ADW/
+
+[2] M. T. Pilehvar, D. Jurgens and R. Navigli.  "Align, Disambiguate and Walk: A Unified Approach for Measuring Semantic Similarity".  Proceedings of the 51st Annual Meeting of the Association for Computational Linguistics (ACL 2013), Sofia, Bulgaria, August 4-9, 2013, pp. 1341-1351.
+
+
+

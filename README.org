@@ -1,0 +1,70 @@
+* ADW.py
+
+A python port of ADW [1].
+
+** Requirements
+
+- Python 2.x
+- NLTK, with the WordNet corpus
+- Semantic Signatures database (see Installation)
+- Offset2ID map (see Installation)
+
+** Installation
+
+1.  Download the original Semantic Signatures database (for all the 118K concepts in WordNet 3.0, size ~ 1.4 GB) using the following link:
+
+  http://lcl.uniroma1.it/adw/ppvs.30g.5k.tar.bz2
+
+2.  Extract the folder ppvs.30g.5k from the downloaded tarball:
+
+  $ tar zxf ppvs.30g.5k.tar.bz2
+
+3.  adwpy.config expects this database (a) to be called 'ppvs' and (b) to be located in the adwpy/data/ directory.  You could either move the downloaded folder to the expected location:
+
+  $ mv ppvs.30g.5k adwpy/data/ppvs
+
+Or create a symlink:
+
+  $ cd adwpy/data
+  $ ln -s /path/to/ppvs.30g.5k ppvs
+
+Or edit adwpy.config.py to point to your prefered location.
+
+4.  Similarly with offset2ID.map.tsv from the ADW github page:
+
+  https://raw.githubusercontent.com/pilehvar/ADW/master/resources/offset2ID.map.tsv
+
+The default location is also in adwpy/data:
+
+  $ cd adwpy/data
+  $ ln -s /path/to/offset2ID.map.tsv
+
+** Quick start
+
+adwpy ports the two disambiguation methods and three Semantic Signature comparison measures described in Pilehvar et al., 2013 [2], and implemented in [1]:
+
+- Disambiguation methods:
+  - NONE (i.e., no disambiguation)
+  - ALIGNMENT_BASED (i.e., alignment-based disambiguation)
+
+- Semantic Signature comparison measures
+  - Cosine
+  - WeightedOverlap
+  - Jaccard
+
+The only input format supported by adwpy is "surface text".
+
+The main front-end function in the library is api.pair_similarity.  ADWTest.py gives an example of this function in use.  Essentially:
+
+  dm = config.DisambiguationMethod.ALIGNMENT_BASED
+  sc = config.SignatureComparison.WEIGHTED_OVERLAP
+  score = pair_similarity(text1, text2, dm, sc)
+
+Where score is a floating point number between 0.0 and 1.0.
+
+** References
+
+[1] ADW https://github.com/pilehvar/ADW
+
+[2] M. T. Pilehvar, D. Jurgens and R. Navigli. Align, Disambiguate and Walk: A Unified Approach for Measuring Semantic Similarity. Proceedings of the 51st Annual Meeting of the Association for Computational Linguistics (ACL 2013), Sofia, Bulgaria, August 4-9, 2013, pp. 1341-1351.
+

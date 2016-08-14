@@ -1,2 +1,0 @@
-# adwpy
-ADW in python
