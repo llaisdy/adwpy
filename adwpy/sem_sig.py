@@ -19,7 +19,7 @@ class SemSig(object):
         self.synset = synset
 
     def load(self):
-        "loads semantic signature form file"
+        "loads semantic signature from file"
         previous = ''
         for line in open(self.src_fn()).readlines():
             synset_id, weight = line.split('\t')
@@ -30,6 +30,14 @@ class SemSig(object):
             self.map[int(synset_id)] = float(weight)
         self.load_ksvs()
         self.load_rnkd()
+
+    def save(self, fn):
+        out = ''
+        if self.ksvs == []:
+            self.load_ksvs()
+        for k in self.ksvs:
+            out += '{}\t{}\n'.format(k, self.map[k])
+        open(fn, 'w').write(out)
 
     def load_ksvs(self):
         self.ksvs = self.keys_sorted_by_val()
@@ -71,7 +79,7 @@ class SemSig(object):
         ret = [self.rnkd[k] for k in keys]
         return ret
 
-    def report(self, n):
+    def report(self):  ## was report(self, n):
         if self.ksvs == []:
             self.load_ksvs()
         i2omap = get_i2omap()

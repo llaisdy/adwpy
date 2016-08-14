@@ -37,11 +37,19 @@ def ss_for_synset_test(st):
 ##                        for (i,j) in sorted(ss.map.items(), key=snd, reverse=True)])
 ##    print fields  #"** ss_for_synset_test\n\nst: {}\n\nss:\n\n{}".format(st, fields)
     print sum(ss.map.values())
+
+def ss_load_save_test():
+    sts = 'director.n.01'
+    ss = sem_sig.sem_sig_for_synset(wn.synset(sts))
+    sfn = ss.src_fn()
+    print sfn
+    ss.save('{}-out.ppv'.format(sts))
     
-def main(x):
-    ss_for_synset_test(x)
+def main():
+    ss_load_save_test()
 
 if __name__ == '__main__':
-    import sys
-    x = sys.argv[1]
-    main(x)
+    ss_load_save_test()
+#    import sys
+#    x = sys.argv[1]
+#    main(x)
