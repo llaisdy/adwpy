@@ -23,6 +23,20 @@ def oov_check(text):
                     bad.append([w, st.name(), os.path.basename(sfn)])
     return (not bad, bad)
 
+def oov_filter(text):
+    "Removes Out Of Vocaulary terms from input text; returns (word, pos) pairs"
+    ok = []
+    for (w,p) in utils.cook(text):
+        sts = wn.synsets(w)
+        if len(sts):
+            for st in sts:
+                ss = sem_sig.sem_sig_for_synset(st, False)
+                sfn = ss.src_fn()
+                if os.path.isfile(sfn):
+                    ok.append((w,p))
+                    continue
+    return ok
+
 def hack_bos_to_boss(wps):
     "The WordNet lemmatizer lemmatises 'boss' to 'bos'.  This function changes it back again.  Not generally useful, but needed for the example text from the Pilehvar paper."
     out = []

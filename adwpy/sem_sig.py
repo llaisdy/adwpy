@@ -31,11 +31,11 @@ class SemSig(object):
         self.load_ksvs()
         self.load_rnkd()
 
-    def save(self, fn):
+    def save(self, fn, tr=5000):
         out = ''
         if self.ksvs == []:
             self.load_ksvs()
-        for k in self.ksvs:
+        for k in self.ksvs[:tr]:
             out += '{}\t{}\n'.format(k, self.map[k])
         open(fn, 'w').write(out)
 
