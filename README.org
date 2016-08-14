@@ -23,12 +23,12 @@ A python port of ADW [1].
 
   $ mv ppvs.30g.5k adwpy/data/ppvs
 
-Or create a symlink:
+  Or create a symlink:
 
   $ cd adwpy/data
   $ ln -s /path/to/ppvs.30g.5k ppvs
 
-Or edit adwpy.config.py to point to your prefered location.
+  Or edit adwpy.config.py to point to your prefered location.
 
 4.  Similarly with offset2ID.map.tsv from the ADW github page:
 
