@@ -1,8 +1,7 @@
 #! /usr/bin/env python
 
-from nltk.corpus import wordnet as wn
-
 from adwpy import comparison, sem_sig
+from adwpy_wn import wn_synsets_by_word_pos
 
 def align(wps1, wps2, sc, topk=0):
     """
@@ -34,7 +33,7 @@ def dictify(wps):
     d = {}
     for wp in wps:
         d[wp] = {}
-        for st in wn.synsets(wp[0], wp[1]):
+        for st in wn_synsets_by_word_pos(wp[0], wp[1]):
             ss = sem_sig.sem_sig_for_synset(st)
             d[wp][ss] = {}
     return d
