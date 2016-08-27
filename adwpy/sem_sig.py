@@ -2,9 +2,8 @@
 
 import os
 
-from nltk.corpus import wordnet as wn
-
 from adwpy.config import PPVS_DIRN, O2IMAP_FN
+from adwpy_wn import wn_synsets_by_word_pos, wn_synset_by_pos_offset
 
 class SemSig(object):
     def __init__(self, ppvs_dirn=""):
@@ -138,7 +137,7 @@ def synset_for_id(i, i2o):
 
 def offset_to_synset(x):
     o,p = x.split('-')
-    return wn._synset_from_pos_and_offset(p,int(o)).name()
+    return wn_synset_by_pos_offset(p, o)
     
 def sem_sig_for_synset(synset, load=True):
     ss = SemSig(PPVS_DIRN)
@@ -158,7 +157,7 @@ def sem_sig_for_wps(wps):
         return average_sem_sig(ss)
 
 def sem_sigs_for_wordpos(word, pos):    
-    ss = [sem_sig_for_synset(s) for s in wn.synsets(word, pos)]
+    ss = [sem_sig_for_synset(s) for s in wn_synsets_by_word_pos(word, pos)]
     return ss
 
 def average_sem_sig(ss):

@@ -2,8 +2,7 @@
 
 import os.path
 
-from nltk.corpus import wordnet as wn
-
+from adwpy_wn import wn_synsets_by_word
 import alignment, comparison, sem_sig, utils
 from config import DisambiguationMethod, SignatureComparison
 
@@ -12,7 +11,7 @@ def oov_check(text):
     "Checks input text for Out Of Vocaulary terms, either 'no synsets' or 'synset not in ppv database'"
     bad = []
     for (w,p) in utils.cook(text):
-        sts = wn.synsets(w)
+        sts = wn_synsets_by_word(w)
         if len(sts) == 0:
             bad.append([w, "No synsets", "n/a"])
         else:
@@ -27,7 +26,7 @@ def oov_filter(text):
     "Removes Out Of Vocaulary terms from input text; returns (word, pos) pairs"
     ok = []
     for (w,p) in utils.cook(text):
-        sts = wn.synsets(w)
+        sts = wn_synsets_by_word(w)
         if len(sts):
             for st in sts:
                 ss = sem_sig.sem_sig_for_synset(st, False)
