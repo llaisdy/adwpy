@@ -1,2 +1,4 @@
-# ignore everything in this directory, apart from me.
+# Ignore everything in this directory
 *
+# Except this file
+!.gitignore
