@@ -89,11 +89,14 @@ class SemSig(object):
         ret = [self.rnkd[k] for k in keys]
         return ret
 
-    def report(self):  ## was report(self, n):
+    def report(self, n):
         if self.ksvs == []:
             self.load_ksvs()
         i2omap = get_i2omap()
-        for k in self.ksvs:  #keys:
+        keys = self.ksvs
+        if n:
+            keys = keys[:n]
+        for k in keys:
             lab = synset_for_id(k, i2omap)
             print '{}\t{}'.format(lab, self.map[k])
 
